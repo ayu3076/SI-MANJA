@@ -1,7 +1,8 @@
 import os
 import csv 
 import pandas as pd
-from tabulate import tabulate 
+from tabulate import tabulate
+from datetime import datetime 
 
 usernamelogin = None
 rolelogin = None
@@ -57,6 +58,12 @@ except FileNotFoundError :
     df.loc[len(df)] = ['admin', '@Admin123', 'admin']
     df.to_csv('user.csv', index=False)
     
+def validasi_tanggal(tanggal):
+    try:
+        datetime.strptime(tanggal, "%Y-%m-%d")
+        return True
+    except ValueError:
+        return False
 
 def df_homepage():
     os.system('cls')
@@ -283,24 +290,6 @@ def df_login():
                 input('\nTekan Enter untuk mencoba lagi...')
                 continue
 
-def df_menumanajer():
-    global usernamelogin
-    os.system('cls')
-    print('╔════════════════════════════════════════════════════╗')
-    print('║  ╔══════════════════════════════════════════════╗  ║')
-    print('║  ║     Sistem Manajemen Panen dan Penjualan     ║  ║')
-    print('║  ║                                              ║  ║')
-    print('║  ║        --------[  SI MANJA  ]-------         ║  ║')
-    print('║  ╚══════════════════════════════════════════════╝  ║')
-    print('╚════════════════════════════════════════════════════╝')
-    print()
-    print('------------------[  MENU MANAJER  ]------------------')
-    print(
-        '   [ 1 ] Registrasi Manajer\n'
-        '   [ 2 ] Login Manajer\n'
-        '   [ 3 ] Logout'
-    )
-
 
 def df_menuadmin():
     global usernamelogin
@@ -316,8 +305,9 @@ def df_menuadmin():
     print('-------------------[  MENU ADMIN  ]-------------------')
     print(
         '   [ 1 ] Registrasi Manajer\n'
-        '   [ 2 ] Login Manajer\n'
-        '   [ 3 ] Logout'
+        '   [ 2 ] Login Manajer\n' 
+        '   [ 3 ] Tampilkan Data User\n'
+        '   [ 4 ] Logout'
     )
 
     while True:
@@ -326,12 +316,58 @@ def df_menuadmin():
             return df_registrasi_manajer()
         elif opsi == '2' or opsi == 'login manajer' :
             return df_login()
-        elif opsi == '3' or opsi == 'logout' :
+        elif opsi == '3' or opsi == 'tampilkan data user':
+            data_user = pd.read_csv('user.csv')
+            print(tabulate(data_user, headers = 'keys', tablefmt = 'grid'))
+            return df_menuadmin()
+        elif opsi == '4' or opsi == 'logout' :
             return df_homepage()
         else :
             print('Inputan tidak valid!')
             input('\nSilahkan tekan Enter untuk kembali ke menu sebelumnya....')
             return df_menuadmin()
+
+
+def df_menumanajer():
+    global usernamelogin
+    os.system('cls')
+    print('╔════════════════════════════════════════════════════╗')
+    print('║  ╔══════════════════════════════════════════════╗  ║')
+    print('║  ║     Sistem Manajemen Panen dan Penjualan     ║  ║')
+    print('║  ║                                              ║  ║')
+    print('║  ║        --------[  SI MANJA  ]-------         ║  ║')
+    print('║  ╚══════════════════════════════════════════════╝  ║')
+    print('╚════════════════════════════════════════════════════╝')
+    print()
+    print('------------------[  MENU MANAJER  ]------------------')
+    print(
+        '   [ 1 ] Kelola Akun\n'
+        '   [ 2 ] Data Spesies\n'
+        '   [ 3 ] Input Data Penjualan\n'
+        '   [ 4 ] Kelola Data Panen Keseluruhan\n'
+        '   [ 5 ] Laporan & Rekap\n'
+        '   [ 6 ] Logout'
+    )
+    opsi = input('Masukkan menu yang anda pilih : ').lower()
+    while True:
+        if opsi == '1' or opsi == 'kelola akun':
+            return df_edit_akun_manajer()
+        elif opsi == '2' or opsi == 'data spesies':
+            return df_data_spesies()
+        elif opsi == '3' or opsi == 'input data penjualan':
+            return df_input_penjualan()
+        elif opsi == '4' or opsi == 'kelola data panen keseluruhan':
+            return df_kelola_panen_keseluruhan()
+        elif opsi == '5' or opsi == 'laporan & rekap':
+            return df_laporan_rekap()
+        elif opsi == '6' or opsi == 'logout':
+            return df_homepage()
+        else :
+            print('Inputan tidak valid!')
+            input('\nSilahkan tekan Enter untuk kembali ke menu sebelumnya.')
+            return df_menumanajer()
+    
+
 
 
 def df_menustaf():
@@ -345,7 +381,7 @@ def df_menustaf():
     print('║  ╚══════════════════════════════════════════════╝  ║')
     print('╚════════════════════════════════════════════════════╝')
     print()
-    print('----------------------[  MENU  ]----------------------')
+    print('--------------------[  MENU STAF ]--------------------')
     print(
         '   [ 1 ] Kelola Akun\n'
         '   [ 2 ] Kelola Data Panen\n'
@@ -479,106 +515,6 @@ def df_kelolaakunpribadi() :
     else:
         print('Inputan tidak valid. Tekan Enter....')
         return df_kelolaakunpribadi()
-
-
-
-# def df_kelolaakun():
-#     while True:
-#         global usernamelogin, rolelogin
-#         os.system('cls')
-#         print('╔════════════════════════════════════════════════════╗')
-#         print('║  ╔══════════════════════════════════════════════╗  ║')
-#         print('║  ║     Sistem Manajemen Panen dan Penjualan     ║  ║')
-#         print('║  ║                                              ║  ║')
-#         print('║  ║        --------[  SI MANJA  ]-------         ║  ║')
-#         print('║  ╚══════════════════════════════════════════════╝  ║')
-#         print('╚════════════════════════════════════════════════════╝')
-#         print()
-#         print('----------------------[  MENU  ]----------------------')
-#         print(
-#             '   [ 1 ] Tampilkan Data Akun\n'
-#             '   [ 2 ] Ubah Username\n'
-#             '   [ 3 ] Ubah Password\n'
-#             '   [ 4 ] Ubah Role\n'
-#             '   [ 5 ] Kembali'
-#         )
-#         menu = input('Pilih menu: ').lower()
-#         if menu == '1' or menu == 'tampilkan data akun' :
-#             os.system('cls')
-#             df = pd.read_csv('user.csv')
-#             print(tabulate(df[['Username', 'Role']], headers = 'keys', tablefmt='fancy_grid'))
-#             input('Tekan Enter untuk kembali!')
-#             return df_kelolaakun()
-
-#         elif menu == '2' or menu == 'ubah username' :
-#             os.system('cls')
-#             df = pd.read_csv('user.csv')
-#             df = df[['Username', 'Role']]
-#             print(tabulate(df, headers='keys', tablefmt='fancy_grid'))
-#             username = input('Masukkan username yang ingin diubah: ')
-#             if username in df['Username'].values: 
-#                 while True:
-#                     username_baru = input('Masukkan Username Baru: ')
-#                     if username_baru not in df['Username'].values:
-#                         df.loc[df['Username'] == username, 'Username'] = username_baru
-#                         df.to_csv('user.csv', index = False)
-#                         input('Username berhasil diubah!')
-#                         return df_kelolaakun()
-#                     else :
-#                         print('Username sudah digunakan, silahkan pilih username lain!')
-#                         continue
-
-#         elif menu == '3' or menu == 'ubah password' :
-#             os.system('cls')
-#             df = pd.read_csv('user.csv')
-#             df = df[['Username', 'Role']]
-#             print(tabulate(df, headers='keys', tablefmt='fancy_grid'))
-#             username = input('Masukkan username yang ingin diubah passswordnya: ')
-#             if username in df['Username'].values:
-#                 while True:
-#                     password_baru = input('Masukkan Password Baru (min. 8 karakter)')
-#                     # validasi panjang password
-#                     if len(password_baru) >= 8:
-#                         df.loc[df['Username'] == username, 'Password'] = password_baru
-#                         df.to_csv('user.csv', index = False)
-#                         input('Password berhasil diubah! Tekan Enter untuk kembali....')
-#                         return df_kelolaakun()
-#                     else :
-#                         print('Password terlalu pendek! Minimal 8 karakter!')
-#             else :
-#                 print('Username tidak ditemukan!')
-#                 input('Tekan Enter untuk kembali....')
-#                 return df_kelolaakun()
-            
-#         elif menu == '4' or menu == 'ubah role' :
-#             os.system('cls')
-#             df = pd.read_csv('user.csv')
-#             df = df[['Username', 'Role']]
-#             print(tabulate(df, headers='keys', tablefmt='fancy_grid'))
-#             username = input('Masukkan username yang ingin diubah passswordnya: ')
-#             if username in df['Username'].values:
-#                 while True:
-#                     role_baru = input('Masukkan Role Baru: (Staf / Manajer)')
-#                     if role_baru in ['staf', 'manajer']:
-#                         df.loc[df['Username'] == username, 'Role'] = role_baru
-#                         df.to_csv('user.csv', index = False)
-#                         input('Role berhasil diubah! Tekan Enter untuk kembali....')
-#                         return df_kelolaakun()
-#                     else : 
-#                         print('Role tidak valid! Masukkan hanya "staf" atau "manajer". ')
-#             else :
-#                 print('Username tidak ditemukan!')
-#                 input('Tekan Enter untuk kembali....')
-#                 return df_kelolaakun() 
-            
-#         elif menu == '5' or menu == 'keluar':
-#             os.system('cls')
-#             df_menustaf()
-
-#         else:
-#             print('Input tidak valid!')
-#             input('Tekan Enter untuk kembali....')
-#             break
          
 
 def df_panen():
@@ -593,39 +529,55 @@ def df_panen():
         print('║  ╚══════════════════════════════════════════════╝  ║')
         print('╚════════════════════════════════════════════════════╝')
         print()
-        print('----------------------[  MENU  ]----------------------')
+        print('-------------------[  MENU PANEN ]--------------------')
         print(
             '   [ 1 ] Tampilkan Data Panen\n'
             '   [ 2 ] Tambahkan Data Panen\n'
             '   [ 3 ] Ubah Data Panen\n'
             '   [ 4 ] Hapus Data Panen\n'
-            '   [ 5 ] Kembali'
+            '   [ 5 ] Statistik Panen\n'
+            '   [ 6 ] Kembali'
         )
+
         opsi = input('Masukkan menu yang anda pilih : ').lower()
+
+        # ---- [ 1 ] TAMPILKAN DATA PANEN ----
         if opsi == '1' or opsi == 'tampilkan data panen':
                 os.system('cls')
+                print('╔════════════════════════════════════════╗')
+                print('║-------------[ DATA PANEN ]-------------║')
+                print('╚════════════════════════════════════════╝')
+                print()
                 df = pd.read_csv('data_panen.csv')
                 if df.empty:
                     print('Belum ada data panen.')
                 else:
                     if rolelogin.lower() == 'staf':
                         df_filtered = df[df['Username'] == usernamelogin]
+
                         if df_filtered.empty:
                             print('Belum ada data panen untuk akun ini.')
-
                         else:
                             print(f"Data Panen untuk pengguna: {usernamelogin}\n")
-                            print(tabulate(df_filtered, headers='keys', tablefmt='fancy_grid'))
+                            df_display = df_filtered.copy()
+                            df_display.insert(0, "No", range(1, len(df_display) + 1))
+                            print(tabulate(df_display, headers='keys', tablefmt='fancy_grid', showindex=False))
                     else:
                     # Jika manajer, tampilkan semua data
                         print('Data Panen Seluruh Akun:\n')
-                        print(tabulate(df, headers='keys', tablefmt='fancy_grid'))
+                        df_display = df.copy()
+                        df_display.insert(0, "No", range(1, len(df_display) + 1))
+                        print(tabulate(df_display, headers='keys', tablefmt='fancy_grid', showindex= False))
 
                 input('\nTekan Enter untuk kembali...')
 
-            
+        # ---- [ 2 ] TAMBAH DATA PANEN ----  
         elif opsi == '2' or opsi == 'tambah data panen':
                 os.system('cls')
+                print('╔════════════════════════════════════════╗')
+                print('║-------------[ DATA PANEN ]-------------║')
+                print('╚════════════════════════════════════════╝')
+                print()
                 df = pd.read_csv('data_panen.csv')
                 
                 # buat ID otomatis
@@ -638,10 +590,25 @@ def df_panen():
 
                 # ambil username dari login
                 username = usernamelogin
-                tanggal = input('Masukkan Tanggal (YYYY-MM-DD): ')
+                while True:
+                    tanggal = input('Masukkan Tanggal (YYYY-MM-DD): ')
+                    if validasi_tanggal(tanggal):
+                        break
+                    print('Format tanggal tidak valid! Gunakan YYYY-MM-DD.')
+
                 spesies = input('Masukkan Spesies Tembakau: ')
-                jumlah = input('Masukkan Jumlah Bandang: ')
-                biaya = input('Masukkan Biaya Operasional (Rp): ')
+                
+                while True:
+                    jumlah = input('Masukkan Jumlah Bandang: ')
+                    if jumlah.isdigit() and int(jumlah) > 0 :
+                        break
+                    print('Jumlah harus angka!')
+
+                while True:
+                    biaya = input('Masukkan Biaya Operasional (Rp): ')
+                    if biaya.isdigit() and float(biaya) >= 0:
+                        break
+                    print('Biaya harus angka!')
 
                 # Tambahkan data baru ke DataFrame
                 new_data = {
@@ -652,74 +619,164 @@ def df_panen():
                     'Jumlah Bandang': jumlah,
                     'Biaya Operasional': biaya
                 }
+
                 df = pd.concat([df, pd.DataFrame([new_data])], ignore_index=True)
                 df.to_csv('data_panen.csv', index=False)
+
                 input('\nData Penen berhasil ditambahkan! Tekan Enter untuk kembali....')
+
+        # ---- [ 3 ] UBAH DATA PANEN ----         
         elif opsi == '3' or opsi == 'ubah data panen':
             os.system('cls')
-            df = pd.read_csv('data_panen.csv')
+            print('╔════════════════════════════════════════╗')
+            print('║-------------[ DATA PANEN ]-------------║')
+            print('╚════════════════════════════════════════╝')
+            print()
+            full_df = pd.read_csv('data_panen.csv')
 
             # Jika staf, hanya bisa ubah datanya sendiri
             if rolelogin.lower() == 'staf':
-                df = df[df['Username'] == usernamelogin]
+                df = full_df[full_df['Username'] == usernamelogin]
+            else:
+                df = full_df.copy()
 
             if df.empty:
                 input('Tidak ada data yang dapat diubah. Tekan Enter untuk kembali...')
                 continue
 
-            print(tabulate(df, headers='keys', tablefmt='fancy_grid'))
-            id_edit = input('\nMasukkan ID Panen yang ingin diubah: ')
+            df_display = df.copy()
+            df_display.insert(0, "No", range(1, len(df_display) + 1))
+            print(tabulate(df_display, headers='keys', tablefmt='fancy_grid', showindex=False))
+            id_edit = input('\nMasukkan ID Panen yang ingin diubah: ').lower()
 
             if id_edit in df['ID Panen'].values:
-                idx = df.index[df['ID Panen'] == id_edit][0]
-                print('\nData saat ini: ')
-                print(df.loc[idx])
                 print('\nMasukkan data baru (kosongkan jika tidak ingin mengubah): ')
-                tanggal = input('Tanggal baru: ')
+                while True:
+                    tanggal = input('Masukkan Tanggal Baru (YYYY-MM-DD): ')
+                    if validasi_tanggal(tanggal):
+                        break
+                    print('Format tanggal tidak valid! Gunakan YYYY-MM-DD.')
+
                 spesies = input('Spesies baru: ')
-                jumlah = input('Jumlah Bandang baru: ')
-                biaya = input('Biaya Operasional baru: ')
 
-                if tanggal: df.at[idx, 'Tanggal'] = tanggal
-                if spesies: df.at[idx, 'Spesies'] = spesies
-                if jumlah: df.at[idx, 'Jumlah Bandang'] = jumlah
-                if biaya: df.at[idx, 'Biaya Operasional'] = biaya
+                while True:
+                    jumlah = input('Masukkan Jumlah Bandang Baru: ')
+                    if jumlah.isdigit() and int(jumlah) > 0 :
+                        break
+                    print('Jumlah harus angka!')
 
-                full_df = pd.read_csv('data_panen.csv')
-                full_df.update(df)
+                while True:
+                    biaya = input('Masukkan Biaya Operasional Baru (Rp): ')
+                    if biaya.isdigit() and float(biaya) >= 0:
+                        break
+                    print('Biaya harus angka!')
+
+                # update data
+                if tanggal: 
+                    full_df.loc[full_df['ID Panen'] == id_edit, 'Tanggal'] = tanggal
+                if spesies: 
+                    full_df.loc[full_df['ID Panen'] == id_edit, 'Spesies'] = spesies
+                if jumlah: 
+                    full_df.loc[full_df['ID Panen'] == id_edit, 'Jumlah Bandang'] = jumlah
+                if biaya: 
+                    full_df.loc[full_df['ID Panen'] == id_edit, 'Biaya Operasional'] = biaya
+
                 full_df.to_csv('data_panen.csv', index=False)
                 input('\nData berhasil diperbarui! Tekan Enter untuk kembali....')
+
             else:
                 input('ID Panen tidak ditemukan! Tekan Enter untuk kembali....')
 
+        # ---- [ 4 ] HAPUS DATA PANEN ---- 
         elif opsi == '4' or opsi == 'hapus data panen':
             os.system('cls')
-            df = pd.read_csv('data_panen.csv')
+            print('╔════════════════════════════════════════╗')
+            print('║-------------[ DATA PANEN ]-------------║')
+            print('╚════════════════════════════════════════╝')
+            print()
+            full_df = pd.read_csv('data_panen.csv')
 
             # Batasi staf hanya bisa hapus datanya sendiri
             if rolelogin.lower() == 'staf':
-                df = df[df['Username'] == usernamelogin]
+                df = full_df[full_df['Username'] == usernamelogin]
+            else:
+                df = full_df.copy()
 
             if df.empty:
                 input('Tidak ada data yang dapat dihapus. Tekan Enter untuk kembali...')
                 continue
 
-            print(tabulate(df, headers='keys', tablefmt='fancy_grid'))
-            id_hapus = input('\nMasukkan ID Panen yang ingin dihapus: ')
+            df_display = df.copy()
+            df_display.insert(0, "No", range(1, len(df_display) + 1))
+            print(tabulate(df_display, headers='keys', tablefmt='fancy_grid', showindex=False))
+
+            id_hapus = input('\nMasukkan ID Panen yang ingin dihapus: ').lower()
 
             if id_hapus in df['ID Panen'].values:
-                df = df[df['ID Panen'] != id_hapus]
-                df.to_csv('data_panen.csv', index=False)
+                full_df = full_df[full_df['ID Panen'] != id_hapus]
+                full_df.to_csv('data_panen.csv', index=False)
                 input('\nData berhasil dihapus! Tekan Enter untuk kembali....')
             else:
                 input('ID Panen tidak ditemukan! Tekan Enter untuk kembali....')
 
-        elif opsi == '5' or opsi == 'kembali':
-            break
+        # ---- [ 5 ] STATISTIK PANEN ----
+        elif opsi == '5' or opsi == 'statistik panen':
+            return df_statistik_panen()
+        
+        # ---- [ 6 ] KEMBALI ----
+        elif opsi == '6' or opsi == 'kembali':
+            return df_menustaf() 
 
         else:
             input('Input tidak valid! Tekan Enter untuk coba lagi...')
 
+def df_statistik_panen():
+    global usernamelogin, rolelogin
+    os.system('cls')
+
+    print('-' * 30 + '[ STATISTIK PANEN ]' + '-' * 30)
+    print(f'\nPengguna : {usernamelogin}\n')
+
+    df = pd.read_csv('data_panen.csv')
+
+    # Filter untuk staf → hanya datanya sendiri
+    if rolelogin.lower() == 'staf':
+        df = df[df['Username'] == usernamelogin]
+
+    if df.empty:
+        input('Belum ada data panen! Tekan Enter untuk kembali...')
+        return
+
+    # Konversi tipe data
+    df['Jumlah Bandang'] = pd.to_numeric(df['Jumlah Bandang'], errors='coerce')
+    df['Biaya Operasional'] = pd.to_numeric(df['Biaya Operasional'], errors='coerce')
+    df['Tanggal'] = pd.to_datetime(df['Tanggal'], errors='coerce')
+
+    # Hitungan dasar
+    total_bandang = df['Jumlah Bandang'].sum()
+    total_biaya = df['Biaya Operasional'].sum()
+    rata_bandang = df['Jumlah Bandang'].mean()
+    jumlah_entri = len(df)
+
+    # Panen terlama & terbaru
+    panen_terlama = df['Tanggal'].min().date()
+    panen_terbaru = df['Tanggal'].max().date()
+
+    # Konversi Bandang → KG
+    total_kg = total_bandang * 12  # 1 bandang = 12 kg
+
+    # ⬇ Tampilan rapi
+    print(f"Total Panen (Bandang)      : {total_bandang}")
+    print(f"Total Panen (Kg)            : {total_kg:,} kg")
+    print(f"Total Biaya Operasional     : Rp {total_biaya:,.0f}")
+    print(f"Rata-rata Jumlah Bandang    : {rata_bandang:.1f}")
+    print(f"Jumlah Entri Panen          : {jumlah_entri}")
+    print(f"Panen Terlama               : {panen_terlama}")
+    print(f"Panen Terbaru               : {panen_terbaru}")
+    print('-' * 70)
+
+    input('\nTekan Enter untuk kembali...')
+    return df_panen()
 
 
 
