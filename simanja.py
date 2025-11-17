@@ -35,8 +35,15 @@ except FileNotFoundError :
 try :
     pd.read_csv('data_spesies.csv')
 except FileNotFoundError :
-    df = pd.DataFrame({'ID Spesies': [], 
-                       'Nama Spesies': []})
+    df = pd.DataFrame({
+        'ID Spesies': ['SP001', 'SP002', 'SP003', 'SP004'], 
+        'Nama Spesies': [
+            'Na-Oogst H823',
+            'P1A Sumatra',
+            'Conshade',
+            'Cameron'
+        ]
+    })
     df[['Nama Spesies']].astype(str)
 
 
@@ -367,8 +374,471 @@ def df_menumanajer():
             input('\nSilahkan tekan Enter untuk kembali ke menu sebelumnya.')
             return df_menumanajer()
     
+def df_edit_akun_manajer():
+    global usernamelogin, rolelogin
+    os.system('cls')
+    print('╔════════════════════════════════════════════════════╗')
+    print('║  ╔══════════════════════════════════════════════╗  ║')
+    print('║  ║     Sistem Manajemen Panen dan Penjualan     ║  ║')
+    print('║  ║                                              ║  ║')
+    print('║  ║        --------[  SI MANJA  ]-------         ║  ║')
+    print('║  ╚══════════════════════════════════════════════╝  ║')
+    print('╚════════════════════════════════════════════════════╝')
+    print()
+    df = pd.read_csv('user.csv')
+    akun = df[df['Username'] == usernamelogin].copy()
+    print('-------------------[  EDIT AKUN  ]--------------------')
+    print('\nData akun anda: ')
+    print(tabulate(akun, headers = 'keys', tablefmt= 'grid'))
+    print(
+            '   [ 1 ] Edit Username\n'
+            '   [ 2 ] Edit Password\n'
+            '   [ 3 ] Kembali\n'
+        )
+    
+    opsi = input('Pilih Menu: ').strip()
+
+    if opsi == '1' or opsi == 'edit username':
+        while True:
+            new_user = input('Masukkan username baru: ').strip()
+            if len(new_user) < 4:
+                print('Username minimal 4 karakter.')
+                continue
+            if new_user in df['Username'].values:
+                print('Username sudah digunakan.')
+                continue
+
+            df.loc[df['Username'] == usernamelogin, 'Username'] = new_user
+            df.to_csv('user.csv', index=False)
+            usernamelogin = new_user
+            print('Username berhasil diubah.')
+            input('Tekan Enter untuk kembali....')
+            return df_menumanajer()
+
+    elif opsi == '2' or opsi == 'edit password':
+        while True:
+            new_pass = input('Masukkan Password (password minimal 8 karakter, mengandung angka, simbol, huruf besar, dan huruf kecil): ')
+            simbol = '!@#$%^&*()' # mendefinisikan karakter simbol
+
+            if len(new_pass) < 8:
+                print('Password minimal 8 karakter.')
+                continue
+
+            ada_huruf_besar = False
+            ada_huruf_kecil = False
+            ada_angka = False
+            ada_simbol = False
+
+            for karakter in new_pass:
+                if karakter.isupper():
+                    ada_huruf_besar = True
+                elif karakter.islower():
+                    ada_huruf_kecil = True
+                elif karakter.isdigit():
+                    ada_angka = True
 
 
+                if karakter in simbol:
+                    ada_simbol = True
+
+            # Jika ada kekurangan, beri feedback spesifik
+            missing = []
+            if not ada_huruf_besar:
+                missing.append('huruf BESAR')
+            if not ada_huruf_kecil:
+                missing.append('huruf kecil')
+            if not ada_angka:
+                missing.append('angka')
+            if not ada_simbol:
+                missing.append('simbol (mis. !@#$%^&*())')
+
+            if missing:
+                print('Password tidak valid — harus mengandung: ' + ', '.join(missing) + '.')
+                # ulangi input password
+                continue
+            else: 
+                print("Password valid.")
+                break
+
+        df.loc[df['Username'] == usernamelogin, 'Password'] = new_pass
+        df.to_csv('user.csv', index = False)
+        print('Password berhasil diubah.')
+        input('Tekan Enter untuk kembali...')
+        return df_menumanajer() 
+
+    elif opsi == '3' or opsi == 'kembali':
+        return df_menuadmin()
+
+    else:
+        print('Inputan tidak valid. Tekan Enter....')
+        return df_edit_akun_manajer()
+
+
+def df_data_spesies():
+    os.system('cls')
+    print('╔════════════════════════════════════════════════════╗')
+    print('║  ╔══════════════════════════════════════════════╗  ║')
+    print('║  ║     Sistem Manajemen Panen dan Penjualan     ║  ║')
+    print('║  ║                                              ║  ║')
+    print('║  ║        --------[  SI MANJA  ]-------         ║  ║')
+    print('║  ╚══════════════════════════════════════════════╝  ║')
+    print('╚════════════════════════════════════════════════════╝')
+    print()
+    print('------------------[  DATA SPESIES  ]------------------')
+    while True:
+        df = pd.read_csv('data_spesies.csv')
+        print()
+        print('  [1] Tampilkan Spesies')
+        print('  [2] Tambah Spesies')
+        print('  [3] Ubah Spesies')
+        print('  [4] Hapus Spesies')
+        print('  [5] Kembali')
+        opsi = input('Pilih menu: ').strip()
+
+        if opsi == '1' or opsi == 'tampilkan spesies':
+            disp = df.copy()
+            disp.insert(0, 'No', range(1, len(disp) + 1))
+            print(tabulate(disp, headers='keys', tablefmt='fancy_grid', showindex=False))
+            input('Tekan Enter untuk kembali....')
+
+        elif opsi == '2' or opsi == 'tambah spesies':
+            if df.empty:
+                new_id = 'SP001'
+            else:
+                last = df['ID Spesies'].iloc[-1]
+                num = int(last[2:]) + 1
+                new_id = f'SP{num:03d}'
+
+            nama = input('Masukkan Nama Spesies: ').strip()
+            if not nama:
+                print('Nama tidak boleh kosong.')
+                continue
+            df.loc[len(df)] = [new_id, nama]
+            df.to_csv('data_spesies.csv', index=False)
+            print('Spesies berhasil ditambahkan.')
+            input('Tekan Enter untuk kembali....')
+
+        elif opsi == '3' or opsi == 'ubah spesies':
+            disp = df.copy()
+            disp.insert(0, 'No', range(1, len(disp) + 1))
+            print(tabulate(disp, headers='keys', tablefmt='fancy_grid', showindex=False))
+            sid = input('Masukkan ID Spesies yang ingin diubah: ').strip()
+            if sid in df['ID Spesies'].values:
+                nama = input('Masukkan Nama Spesies baru: ').strip()
+                if nama:
+                    df.loc[df['ID Spesies'] == sid, 'Nama Spesies'] = nama
+                    df.to_csv('data_spesies.csv', index=False)
+                    print('Spesies berhasil diperbarui.')
+                else:
+                    print('Nama tidak boleh kosong.')
+            else:
+                print('ID Spesies tidak ditemukan.')
+            input('Tekan Enter untuk kembali....')
+
+        elif opsi == '4' or opsi == 'hapus spesies':
+            disp = df.copy()
+            disp.insert(0, 'No', range(1, len(disp) + 1))
+            print(tabulate(disp, headers='keys', tablefmt='fancy_grid', showindex=False))
+            sid = input('Masukkan ID Spesies yang ingin dihapus: ').strip()
+            if sid in df['ID Spesies'].values:
+                df = df[df['ID Spesies'] != sid]
+                df.to_csv('data_spesies', index=False)
+                print('Spesies berhasil dihapus.')
+            else:
+                print('ID Spesies tidak ditemukan.')
+            input('Tekan Enter untuk kembali....')
+
+        elif opsi == '5' or opsi == 'kembali':
+            return df_menumanajer()
+        
+        else:
+            print('Input tidak valid!')
+
+
+def df_input_penjualan():
+    os.system('cls')
+    print('╔════════════════════════════════════════════════════╗')
+    print('║  ╔══════════════════════════════════════════════╗  ║')
+    print('║  ║     Sistem Manajemen Panen dan Penjualan     ║  ║')
+    print('║  ║                                              ║  ║')
+    print('║  ║        --------[  SI MANJA  ]-------         ║  ║')
+    print('║  ╚══════════════════════════════════════════════╝  ║')
+    print('╚════════════════════════════════════════════════════╝')
+    print()
+    print('-----------------[  DATA PENJUALAN  ]-----------------')
+    panen_all = pd.read_csv('data_panen.csv')
+    pen = pd.read_csv('data_penjualan.csv')
+
+    # buat id transaksi otomatis
+    if pen.empty:
+        new_id = 'TR001'
+    else:
+        last = pen['ID Transaksi'].iloc[-1]
+        num = int(last[2:]) + 1
+        new_id = f'TR{num:03d}'
+
+    # tampilkan panen untuk referensi 
+    if panen_all.empty:
+        print('Belum ada panen. Tidak dapat melakukan transaksi.')
+        input('Tekan Enter untuk kembali....')
+        return df_menumanajer()
+    else:
+        disp = panen_all.copy()
+        disp.insert(0, 'No', range(1, len(disp) + 1))
+        print('Referensi Data Panen: ')
+        print(tabulate(disp[['No', 'ID Panen', 'Username', 'Tanggal', 'Spesies', 'Jumlah Bandang']], headers='keys', tablefmt='fancy_grid', showindex=False))
+
+    # pilih ID Panen
+    idpanen = input('\nMasukkan ID Panen yang akan dijual: ').strip()
+    if idpanen not in panen_all['ID Panen'].values:
+        print('ID Panen tidak ditemukan.')
+        input('Tekan Enter untuk kembali....')
+        return df_menumanajer()
+    
+    # ambil baris panen
+    row = panen_all[panen_all['ID Panen'] == idpanen].iloc[0]
+    bandang = pd.to_numeric(row['Jumlah Bandang'], errors='coerce')
+    if pd.isna(bandang):
+        print('Jumlah Bandang tidak valid pada data panen.')
+        input('Tekan Enter untuk kembali....')
+        return df_menumanajer()
+    availabel_kg = bandang * 12
+
+    # input kuantitas (kg)
+    while True:
+        qty = input(f'Masukkan kuantitas (kg) (tersediaa {int(availabel_kg)} kg): ').strip()
+        try:
+            qty_val = float(qty)
+            if qty_val <= 0:
+                print('Kuantitas harus lebih dari 0.')
+                continue
+            if qty_val > availabel_kg:
+                print('Kuantitas melebihi stok tersedia.')
+                continue
+            break
+        except ValueError:
+            print('Masukkan angka untuk kuantitas.')
+    
+    # input harga jual per kg
+    while True:
+        harga = input('Masukkan Harga Jual per kg (Rp): ').strip()
+        if harga.isdigit() and float(harga) >= 0:
+            harga_val = float(harga)
+            break
+        else:
+            print('Harga harus angka bulat >= 0.')
+
+    # simpan transaksi 
+    tanggal = datetime.now().strftime('%Y-%m-%d')
+    pendapatan = qty_val * harga_val
+    new_tr = {
+        'ID Transaksi': new_id,
+        'Tanggal': tanggal,
+        'ID Panen': idpanen,
+        'Kuantitas (kg)': qty_val,
+        'Harga Jual/kg': harga_val,
+        'Pendapatan': pendapatan
+    }
+
+    # memastikan kolom 'Pedapatan'
+    if 'Pendapatan' not in pen.columns:
+        pen['Pendapatan'] = []
+
+    df_pen = pd.concat([df_pen, pd.DataFrame([new_tr])], ignore_index=True)
+    df_pen.to_csv('data_penjualan.csv', index=False)
+    print('\nTransaksi berhasil dicatat:')
+    print(tabulate(pd.DataFrame([new_tr]), headers='keys', tablefmt='fancy_grid', showindex=False))
+    input('Tekan Enter untuk kembali...')
+    return df_menumanajer()
+
+
+def df_kelola_panen_keseluruhan():
+    os.system('cls')
+    print('╔════════════════════════════════════════════════════╗')
+    print('║  ╔══════════════════════════════════════════════╗  ║')
+    print('║  ║     Sistem Manajemen Panen dan Penjualan     ║  ║')
+    print('║  ║                                              ║  ║')
+    print('║  ║        --------[  SI MANJA  ]-------         ║  ║')
+    print('║  ╚══════════════════════════════════════════════╝  ║')
+    print('╚════════════════════════════════════════════════════╝')
+    print()
+    print('----------[  KELOLA DATA PANEN (MANAJER)  ]-----------')
+
+    while True:
+        print(
+            '[1] Tampilkan Semua Data Panen'
+            '[2] Tambah Data Panen'
+            '[3] Ubah Data Panen'
+            '[4] Hapus Data Panen'
+            '[5] Kembali'
+        )
+        opsi = input('Pilih menu: ').strip()
+
+        if opsi == '1' or opsi == 'tampilkan semua data panen':
+            df = pd.read_csv('data_panen.csv')
+            if df.empty:
+                print('Belum ada data panen.')
+            else:
+                disp = df.copy(); disp.insert(0, 'No', range(1, len(disp) + 1))
+                print(tabulate(disp, headers='keys', tablefmt='fancy_grid', showindex=False))
+            input('Tekan Enter untuk kembali...')
+
+        elif opsi == '2' or opsi == 'tambah data panen':
+            df = pd.read_csv('data_panen.csv')
+            if df.empty:
+                new_id = 'PN001'
+            else:
+                last = df['ID Panen'].iloc[-1]; num = int(last[2:]) + 1; new_id = f'PN{num:03d}'
+
+            username = input('Masukkan username pemilik data panen: ').strip()
+
+            tanggal = input('Masukkan Tanggal (YYYY-MM-DD): ').strip()
+            while not validasi_tanggal(tanggal):
+                print('Format tanggal salah, gunakan YYYY-MM-DD')
+                tanggal = input('Masukkan Tanggal (YYYY-MM-DD): ').strip()
+            
+            spesies = input('Masukkan Spesies: ').strip()
+            while True:
+                jumlah = input('Jumlah Bandang: ').strip()
+                if jumlah.isdigit() and int(jumlah) > 0:
+                    break
+                print('Jumlah Bandang harus angka > 0')
+            
+            while True:
+                biaya = input('Biaya Operasional (Rp): ').strip()
+                if biaya.isdigit():
+                    break
+                print('Biaya harus angka')
+            
+            new_row = {'ID Panen': new_id, 
+                       'Username': username, 
+                       'Tanggal': tanggal,
+                       'Spesies': spesies, 
+                       'Jumlah Bandang': jumlah, 
+                       'Biaya Operasional': biaya
+                    }
+            df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
+            df.to_csv('data_panen.csv', index=False)
+            print('Data panen berhasil ditambahkan.')
+            input('Tekan Enter untuk kembali...')
+        
+        elif opsi == '3' or opsi == 'ubah data panen':
+            full_df = pd.read_csv('data_panen.csv')
+            if full_df.empty:
+                print('Tidak ada data panen.')
+                input('Tekan Enter untuk kembali...')
+                continue
+
+            disp = full_df.copy(); disp.insert(0, 'No', range(1, len(disp) + 1))
+            print(tabulate(disp, headers='keys', tablefmt='fancy_grid', showindex=False))
+            id_edit = input('Masukkan ID Panen yang ingin diubah: ').strip()
+            if id_edit not in full_df['ID Panen'].values:
+                print('ID Panen tidak ditemukan.')
+                input('Tekan Enter untuk kembali...')
+                continue
+
+            df_display = df.copy()
+            df_display.insert(0, "No", range(1, len(df_display) + 1))
+            print(tabulate(df_display, headers='keys', tablefmt='fancy_grid', showindex=False))
+            id_edit = input('\nMasukkan ID Panen yang ingin diubah: ').lower()
+
+            if id_edit in df['ID Panen'].values:
+                print('\nMasukkan data baru (kosongkan jika tidak ingin mengubah): ')
+                while True:
+                    tanggal = input('Masukkan Tanggal Baru (YYYY-MM-DD): ')
+                    if validasi_tanggal(tanggal):
+                        break
+                    print('Format tanggal tidak valid! Gunakan YYYY-MM-DD.')
+
+                spesies = input('Spesies baru: ')
+
+                while True:
+                    jumlah = input('Masukkan Jumlah Bandang Baru: ')
+                    if jumlah.isdigit() and int(jumlah) > 0 :
+                        break
+                    print('Jumlah harus angka!')
+
+                while True:
+                    biaya = input('Masukkan Biaya Operasional Baru (Rp): ')
+                    if biaya.isdigit() and float(biaya) >= 0:
+                        break
+                    print('Biaya harus angka!')
+
+                # update data
+                if tanggal: 
+                    full_df.loc[full_df['ID Panen'] == id_edit, 'Tanggal'] = tanggal
+                if spesies: 
+                    full_df.loc[full_df['ID Panen'] == id_edit, 'Spesies'] = spesies
+                if jumlah: 
+                    full_df.loc[full_df['ID Panen'] == id_edit, 'Jumlah Bandang'] = jumlah
+                if biaya: 
+                    full_df.loc[full_df['ID Panen'] == id_edit, 'Biaya Operasional'] = biaya
+
+                full_df.to_csv('data_panen.csv', index=False)
+                input('\nData berhasil diperbarui! Tekan Enter untuk kembali....')
+
+            else:
+                input('ID Panen tidak ditemukan! Tekan Enter untuk kembali....')
+        elif opsi == '4' or opsi == 'hapus data panen':
+            full_df = pd.read_csv('data_panen.csv')
+            if full_df.empty:
+                print('Tidak ada data panen.')
+                input('Tekan Enter...')
+                continue
+
+            disp = full_df.copy()
+            disp.insert(0, 'No', range(1, len(disp) + 1))
+            print(tabulate(disp, headers='keys', tablefmt='fancy_grid', showindex=False))
+
+            id_hapus = input('Masukkan ID Panen yang ingin dihapus: ').strip()
+            if id_hapus in df['ID Panen'].values:
+                full_df = full_df[full_df['ID Panen'] != id_hapus]
+                full_df.to_csv('data_panen.csv', index=False)
+                input('\nData berhasil dihapus! Tekan Enter untuk kembali....')
+            else:
+                input('ID Panen tidak ditemukan! Tekan Enter untuk kembali....')
+
+        elif opsi == '5' or opsi == 'kembali':
+            return df_menumanajer()
+        
+        else: 
+            print('Input tidak valid.')
+            return df_menumanajer() 
+
+
+def df_laporan_rekap():
+    os.system('cls')
+    print('╔════════════════════════════════════════════════════╗')
+    print('║  ╔══════════════════════════════════════════════╗  ║')
+    print('║  ║     Sistem Manajemen Panen dan Penjualan     ║  ║')
+    print('║  ║                                              ║  ║')
+    print('║  ║        --------[  SI MANJA  ]-------         ║  ║')
+    print('║  ╚══════════════════════════════════════════════╝  ║')
+    print('╚════════════════════════════════════════════════════╝')
+    print()
+    print('-----------------[  LAPORAN & REKAP  ]----------------')
+    
+    while True:
+        print(
+            '[1] Laporan Transaksi (urut berdasarkan Pendapatan)'
+            '[2] Laporan Transaksi (urut berdasarkan Tanggal)'
+            '[3] Cari Transaksi (ID Transaksi)'
+            '[4] Rekap Per Spesies (pendapatan / total kuantitas)'
+            '[5] Kembali'
+        )
+        opsi = input('Pilih menu: ').strip()
+        if opsi == '1':
+            # sorting menggunakan pandas (quick/merge sort tergantung pandas impl.)
+            df_tr = pd.read_csv('data_penjualan.csv')
+            if df_tr.empty:
+                print('Belum ada transaksi.')
+            else:
+                if 'Pendapatan' not in df_tr.columns:
+                    df_tr['Pendapatan'] = df_tr['Kuantitas (kg)'] * df_tr['Harga Jual/kg']
+                df_sorted = df_tr.sort_values(by='Pendapatan', ascending=False)
+                df_sorted.insert(0, 'No', range(1, len(df_sorted) + 1))
+                print(tabulate(df_sorted, headers='keys', tablefmt='fancy_grid', showindex=False))
+            input('Tekan Enter untuk kembali...')
 
 def df_menustaf():
     global usernamelogin
@@ -507,6 +977,8 @@ def df_kelolaakunpribadi() :
 
         df.loc[df['Username'] == usernamelogin, 'Password'] = new_pass
         df.to_csv('user.csv', index = False)
+        print('Password berhasil diubah.')
+        input('Tekan Enter untuk kembali...')
         return df_kelolaakunpribadi()
     
     elif opsi == '3' or opsi == 'kembali':
