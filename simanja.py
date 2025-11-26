@@ -261,8 +261,7 @@ def df_registrasi_manajer():
             return df_menuadmin()
         else :
             print('Input tidak valid. Silahkan ulangi....')
-                
-    
+                  
 
 def df_login():
     while True:
@@ -411,7 +410,8 @@ def df_menumanajer():
             print('Inputan tidak valid!')
             input('\nSilahkan tekan Enter untuk kembali ke menu sebelumnya.')
             return df_menumanajer()
-    
+
+
 def df_edit_akun_manajer():
     global usernamelogin, rolelogin
     os.system('cls')
@@ -518,6 +518,7 @@ def df_edit_akun_manajer():
         input('Tekan Enter untuk kembali...')
         return df_menumanajer() 
 
+    # --- KEMBALI --- 
     elif opsi == '3' or opsi == 'kembali':
         return df_menuadmin()
 
@@ -613,6 +614,8 @@ def df_data_spesies():
         
         else:
             print('Input tidak valid!')
+            input('Tekan Enter untuk melanjutkan....')
+            continue
 
 
 def df_penjualan():
@@ -654,7 +657,7 @@ def df_penjualan():
                 print(tabulate(df_display, headers='keys', tablefmt='fancy_grid', showindex=False))
             input('Tekan Enter untuk kembali....')
 
-        # ---- [ 2 ] TAMBAH DATA PANEN ----  
+        # ---- [ 2 ] TAMBAH DATA PENJUALAN ----  
         elif opsi == '2' or opsi == 'tambah data panen':
             os.system('cls')
             print('╔════════════════════════════════════════╗')
@@ -1200,8 +1203,6 @@ def df_laporan_rekap():
                 print(tabulate(found, headers='keys', tablefmt='fancy_grid', showindex=False))
 
             input('Tekan Enter untuk kembali....')
-
-
 
         elif opsi == '4' or opsi == 'rekap per spesies' :
             os.system('cls')
