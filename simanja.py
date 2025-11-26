@@ -1139,7 +1139,7 @@ def df_laporan_rekap():
         print(
             '[1] Laporan Transaksi (urut berdasarkan Pendapatan)\n'
             '[2] Laporan Transaksi (urut berdasarkan Tanggal)\n'
-            '[3] Cari Transaksi (ID Transaksi)\n'
+            '[3] Cari Transaksi\n'
             '[4] Rekap Per Spesies (pendapatan / total kuantitas)\n'
             '[5] Kembali'
         )
@@ -1173,22 +1173,35 @@ def df_laporan_rekap():
 
         elif opsi == '3' or opsi == 'cari transaksi' :
             os.system('cls')
-            # df = pd.read_csv('data_penjualan.csv')
-            # disp = df.copy()
-            # disp.insert(0, 'No', range(1, len(disp) + 1))
-            # print(tabulate(disp, headers='keys', tablefmt='fancy_grid', showindex=False))
-            cari = input('Masukkan ID Transaksi yang dicari: ').strip().upper()
             df_tr = pd.read_csv('data_penjualan.csv')
-            found = []
 
-            for _, r in df_tr.iterrows():
-                if str(r.get('ID Transaksi', '')).strip() == cari:
-                    found.append(r)
-            if found:
-                print(tabulate(pd.DataFrame(found), headers='keys', tablefmt='fancy_grid', showindex=False))
+            if df_tr.empty:
+                print('Belum ada transaksi.')
+                input('Tekan Enter untuk kembali....')
+                return
+            
+            cari = input('Masukkan tanggal transaksi (YYYY-MM-DD): ').strip()
+
+            try:
+                cari_dt = pd.to_datetime(cari)
+            except:
+                print('Format tanggal tidak valid!')
+                input('Tekan Enter untuk kembali....')
+                return
+            
+            df_tr['Tanggal'] = pd.to_datetime(df_tr['Tanggal'], errors='coerce')
+
+            found = df_tr[df_tr['Tanggal'] == cari_dt]
+            if found.empty:
+                print('Tidak ada transaksi pada tanggal tersebut.')
             else:
-                print('Transaksi tidak ditemukan.')
+                found = found.sort_values(by='Tanggal', ascending=False)
+                found.insert(0, 'No', range(1, len(found) + 1))
+                print(tabulate(found, headers='keys', tablefmt='fancy_grid', showindex=False))
+
             input('Tekan Enter untuk kembali....')
+
+
 
         elif opsi == '4' or opsi == 'rekap per spesies' :
             os.system('cls')
