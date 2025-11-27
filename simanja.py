@@ -179,6 +179,7 @@ def df_registrasi():
             return df_registrasi()
         else :
             print('Input tidak valid. Silahkan ulangi....')
+            return df_registrasi()
 
 def df_registrasi_manajer():
     os.system('cls')
@@ -196,7 +197,7 @@ def df_registrasi_manajer():
     username = input("Masukkan username manajer: ")
     if len(username) < 4 :
         input('Username minimal 4 huruf. Tekan Enter untuk melanjutkan....')
-        df_registrasi_manajer()
+        return df_registrasi_manajer()
 
     elif username in dfuser['Username'].values:
         print("Username sudah ada!")
@@ -261,6 +262,7 @@ def df_registrasi_manajer():
             return df_menuadmin()
         else :
             print('Input tidak valid. Silahkan ulangi....')
+            return df_registrasi_manajer()
                   
 
 def df_login():
@@ -555,6 +557,7 @@ def df_data_spesies():
             disp.insert(0, 'No', range(1, len(disp) + 1))
             print(tabulate(disp, headers='keys', tablefmt='fancy_grid', showindex=False))
             input('Tekan Enter untuk kembali....')
+            return df_data_spesies()
 
         elif opsi == '2' or opsi == 'tambah spesies':
             os.system('cls')
@@ -608,6 +611,7 @@ def df_data_spesies():
             else:
                 print('ID Spesies tidak ditemukan.')
             input('Tekan Enter untuk kembali....')
+            return df_data_spesies()
 
         elif opsi == '5' or opsi == 'kembali':
             return df_menumanajer()
@@ -658,7 +662,7 @@ def df_penjualan():
             input('Tekan Enter untuk kembali....')
 
         # ---- [ 2 ] TAMBAH DATA PENJUALAN ----  
-        elif opsi == '2' or opsi == 'tambah data panen':
+        elif opsi == '2' or opsi == 'tambah data penjualan':
             os.system('cls')
             print('╔════════════════════════════════════════╗')
             print('║-------[ TAMBAH DATA PENJUALAN ]--------║')
